@@ -7,7 +7,7 @@
     
     // Security Access Check
     const accessKey = prompt("Enter Access Key:");
-    if (accessKey !== "Osman") {
+    if (accessKey !== "Osman Ali") {
         alert("Access Denied");
         return;
     }
