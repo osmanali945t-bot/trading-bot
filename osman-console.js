@@ -1,56 +1,58 @@
 /**
- * Osman Smart Trading Engine - Final Directional Logic
- * Features: Drag & Drop, Smart Auto-Entry (Separated Buttons)
+ * Osman Master Trading Engine v5.0
+ * Logic: Price Movement Analysis (UP/DOWN Auto Selection)
  */
 (function () {
     if (window.__OSMAN_ACTIVE__) return;
     window.__OSMAN_ACTIVE__ = true;
 
-    // ১. মুভেবল বাটন তৈরি
+    // UI creation
     const widget = document.createElement("div");
-    widget.style.cssText = "position:fixed; bottom:100px; left:20px; z-index:9999999; cursor:move; width:60px; height:60px; border-radius:50%; background:#000; border:3px solid #00ff00; box-shadow:0 0 15px #00ff00; display:flex; align-items:center; justify-content:center; touch-action: none;";
+    widget.style.cssText = "position:fixed; bottom:100px; left:20px; z-index:9999999; cursor:move; width:60px; height:60px; border-radius:50%; background:#000; border:3px solid #00ff00; display:flex; align-items:center; justify-content:center;";
     widget.innerHTML = `<div id="status-light" style="width:20px; height:20px; background:#00ff00; border-radius:50%;"></div>`;
     document.body.appendChild(widget);
 
-    // ড্র্যাগ লজিক
+    // Dragging support
     let isDragging = false;
-    widget.addEventListener('mousedown', (e) => { isDragging = true; });
-    document.addEventListener('mousemove', (e) => {
+    widget.onmousedown = () => isDragging = true;
+    document.onmousemove = (e) => {
         if (isDragging) {
-            widget.style.left = (e.clientX - 30) + "px";
-            widget.style.top = (e.clientY - 30) + "px";
-            widget.style.bottom = "auto";
+            widget.style.left = e.clientX - 30 + "px";
+            widget.style.top = e.clientY - 30 + "px";
         }
-    });
-    document.addEventListener('mouseup', () => { isDragging = false; });
+    };
+    document.onmouseup = () => isDragging = false;
 
-    // ২. স্মার্ট স্ক্যানার ও ডিরেকশন লজিক
+    // Smart Engine
     let isRunning = false;
+    let lastPrice = 0;
+
     widget.onclick = () => {
         if (isDragging) return;
         isRunning = !isRunning;
-        const light = document.getElementById("status-light");
         widget.style.borderColor = isRunning ? "#ff0000" : "#00ff00";
-        light.style.background = isRunning ? "#ff0000" : "#00ff00";
-
+        
         if (isRunning) {
             window.__scanInterval = setInterval(() => {
-                // স্মার্ট বাটন ডিটেকশন
-                const buttons = Array.from(document.querySelectorAll('button'));
-                const upBtn = buttons.find(b => b.innerText.trim().toLowerCase() === 'up');
-                const downBtn = buttons.find(b => b.innerText.trim().toLowerCase() === 'down');
+                // রিয়েল টাইম প্রাইস ডাটা রিডিং
+                const priceElement = document.querySelector('.chart-price-value') || document.querySelector('.price-value');
+                const currentPrice = priceElement ? parseFloat(priceElement.innerText.replace(/[^0-9.]/g, '')) : 0;
 
-                // আপনার কন্ডিশন অনুযায়ী এন্ট্রি (বর্তমানে শুধু ডেমো লজিক)
-                // আপনি এখানে আপনার এনালাইসিস যোগ করবেন
-                const shouldGoUp = true; // এখানে আপনার লজিক বসবে
-                
-                if (shouldGoUp && upBtn) {
-                    upBtn.click();
-                    console.log("Osman Engine: Successfully clicked UP");
-                } else if (!shouldGoUp && downBtn) {
-                    downBtn.click();
-                    console.log("Osman Engine: Successfully clicked DOWN");
+                if (lastPrice !== 0 && currentPrice !== 0) {
+                    const buttons = Array.from(document.querySelectorAll('button'));
+                    const upBtn = buttons.find(b => b.innerText.toLowerCase() === 'up');
+                    const downBtn = buttons.find(b => b.innerText.toLowerCase() === 'down');
+
+                    // লজিক: প্রাইস বাড়লে UP, কমলে DOWN
+                    if (currentPrice > lastPrice) {
+                        if (upBtn) upBtn.click();
+                        console.log("Osman Engine: Price UP -> Triggered UP");
+                    } else if (currentPrice < lastPrice) {
+                        if (downBtn) downBtn.click();
+                        console.log("Osman Engine: Price DOWN -> Triggered DOWN");
+                    }
                 }
+                lastPrice = currentPrice;
             }, 5000);
         } else {
             clearInterval(window.__scanInterval);
