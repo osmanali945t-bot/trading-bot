@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Osman Final Tool</title>
+    <style>
+        body { background: #060a08; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #111; padding: 40px; border-radius: 20px; border: 1px solid #00ff66; text-align: center; }
+        button { background: #00ff66; color: #000; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Osman Final Engine</h1>
+        <button id="btn-copy">Copy Final Activation Code</button>
+        <p id="msg"></p>
+    </div>
+
+    <script>
+        // আপনার গিটহাবের RAW লিংকটি এখানে দিন
+        const scriptUrl = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO_NAME/main/osman-console.js";
+        const bookmarklet = `javascript:(function(){fetch('${scriptUrl}?t='+Date.now()).then(r=>r.text()).then(eval)})();`;
+
+        document.getElementById("btn-copy").addEventListener("click", () => {
+            navigator.clipboard.writeText(bookmarklet);
+            document.getElementById("msg").innerText = "Success! Engine Code Copied.";
+        });
+    </script>
+</body>
+</html>
